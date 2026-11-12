@@ -8,47 +8,47 @@
     {
       "id": "p1",
       "category": "doll",
-      "name": "草莓奶昔娃娃",
+      "name": "草莓奶昔 紐約限定🇺🇸 Fao Bubbeca Milkshake",
       "description": "30cm，可換裝，附原廠盒",
-      "price": 1680,
+      "price": 1614,
       "status": "instock",
-      "image": "images/p1-mwdg7tdg.jpg"
+      "image": "images/p1-mwdh767w.jpg"
     },
     {
       "id": "p2",
       "category": "doll",
-      "name": "範例｜冬季限定毛帽娃",
+      "name": "巧克力黑白餅乾 紐約限定🇺🇸  Nibblechip Cookie",
       "description": "25cm，紐約門市限定配色",
-      "price": 2280,
+      "price": 1256,
       "status": "instock",
-      "image": ""
+      "image": "images/p2-mwdhbw46.jpg"
     },
     {
       "id": "p3",
       "category": "doll",
-      "name": "範例｜復古格紋套裝",
+      "name": "冰淇淋熊熊 紐約限定🇺🇸 Oatus Bear with Ice Cream",
       "description": "30cm，含兩套衣服",
-      "price": 2980,
+      "price": 1973,
       "status": "preorder",
-      "image": ""
+      "image": "images/p3-mwdhc3oq.jpg"
     },
     {
       "id": "p4",
       "category": "doll",
-      "name": "範例｜迷你口袋娃 3 入",
+      "name": " 紐約鴿子 紐約限定🇺🇸 Fao Strutton Pigeon",
       "description": "10cm，隨機款式盲盒",
-      "price": 990,
+      "price": 1435,
       "status": "instock",
-      "image": ""
+      "image": "images/p4-mwdhcq67.jpg"
     },
     {
       "id": "p5",
       "category": "doll",
-      "name": "範例｜聖誕節禮盒組",
+      "name": "莓果起司蛋糕 紐約限定🇺🇸  Crember Cheesecake",
       "description": "含娃娃與配件，12 月底到貨",
-      "price": 3580,
+      "price": 1435,
       "status": "preorder",
-      "image": ""
+      "image": "images/p5-mwdhcvm1.jpg"
     },
     {
       "id": "p6",
