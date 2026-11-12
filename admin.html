@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>店主後台｜紐約娃娃代購</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same airmail identity as the shop, utilitarian. Sticky publish bar, shop-info panel, product rows (thumb | fields | actions), crop modal. */
+:root{
+  color-scheme:light;
+  --bg:#F5F6FA; --surface:#FFFFFF; --ink:#1D2540; --muted:#5E6782; --line:#DDE1EC;
+  --rose:#D2486F; --rose-soft:#FBE7EE; --navy:#2A4BA0; --navy-soft:#E6ECFA; --ok:#2E8B62; --ok-soft:#E2F4EA;
+  --scrim:rgba(15,18,35,.55); --checker:#E9ECF3;
+  --font-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --font-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --font-mono:"DM Mono",ui-monospace,Menlo,monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#12162A; --surface:#1B2038; --ink:#EEF0F8; --muted:#A3AAC4; --line:#2D3454;
+  --rose:#F07098; --rose-soft:#3A1F33; --navy:#8FA8F0; --navy-soft:#1F2A4D; --ok:#5CC796; --ok-soft:#173528;
+  --scrim:rgba(0,0,0,.65); --checker:#262C47; color-scheme:dark}}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 80px}
+[hidden]{display:none!important}
+img{max-width:100%}
+h1,h2,h3{font-family:var(--font-display);font-weight:400;margin:0;line-height:1.3;text-wrap:balance}
+p{margin:0}
+a{color:var(--navy)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.airmail{height:6px;background:repeating-linear-gradient(-45deg,var(--rose) 0 14px,transparent 14px 22px,var(--navy) 22px 36px,transparent 36px 44px);border-radius:3px}
+
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:18px 6px}
+header.top h1{font-size:1.5rem}
+header.top .sub{color:var(--muted);font-size:.9rem}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid transparent;border-radius:999px;padding:8px 18px;cursor:pointer;text-decoration:none;font-weight:500;white-space:nowrap}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--rose);color:#fff}
+.btn-ghost{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.btn-sm{padding:5px 12px;font-size:.85rem}
+.btn-danger{background:transparent;border-color:var(--rose);color:var(--rose)}
+.icon-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-items:center;padding:0}
+.icon-btn[disabled]{opacity:.35;cursor:not-allowed}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel h2{font-size:1.25rem}
+.panel .hint{color:var(--muted);font-size:.85rem}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:.8rem;font-weight:500;color:var(--muted)}
+.field input,.field select{border:1px solid var(--line);border-radius:10px;padding:8px 11px;background:var(--bg);width:100%}
+.grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.err{color:var(--rose);font-size:.88rem}
+.ok{color:var(--ok);font-size:.88rem}
+ol.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px;font-size:.92rem}
+ol.steps code{font-family:var(--font-mono);background:var(--navy-soft);border-radius:6px;padding:1px 6px;font-size:.85em}
+.check{display:flex;align-items:center;gap:8px;font-size:.9rem}
+
+.pubbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pubbar .state{font-size:.9rem}
+.pubbar .state.dirty{color:#FFB3C8}
+.pubbar .tools{display:flex;gap:8px;flex-wrap:wrap}
+.pubbar .btn-ghost{background:transparent;color:var(--bg);border-color:rgba(255,255,255,.3)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--bg)}
+.pubmsg{font-size:.9rem;padding:10px 14px;border-radius:10px}
+.pubmsg.ok{background:var(--ok-soft);color:var(--ok)}
+.pubmsg.err{background:var(--rose-soft);color:var(--rose)}
+
+.prow{display:grid;grid-template-columns:auto 168px minmax(0,1fr);gap:16px;align-items:start;padding-block:16px;border-top:1px solid var(--line)}
+.prow:first-of-type{border-top:0}
+.order{display:flex;flex-direction:column;gap:6px;align-items:center}
+.order .num{font-family:var(--font-mono);font-size:.8rem;color:var(--muted)}
+.thumbcol{display:flex;flex-direction:column;gap:8px}
+.thumb{aspect-ratio:4/3;width:100%;border-radius:10px;border:1px solid var(--line);overflow:hidden;background:var(--checker);display:grid;place-items:center;color:var(--muted);font-size:.8rem;text-align:center}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumbcol .btns{display:flex;gap:6px;flex-wrap:wrap}
+.fields{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+.fields .wide{grid-column:1 / -1}
+.rowfoot{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.newtag{font-size:.75rem;background:var(--navy-soft);color:var(--navy);border-radius:999px;padding:1px 9px}
+.pending{font-size:.75rem;background:var(--rose-soft);color:var(--rose);border-radius:999px;padding:1px 9px}
+.empty{color:var(--muted);text-align:center;padding:24px;border:1px dashed var(--line);border-radius:10px}
+
+.modal{position:fixed;inset:0;z-index:40;background:var(--scrim);display:grid;place-items:center;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet{background:var(--surface);border-radius:16px;width:100%;max-width:640px;max-height:100%;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+.sheet h3{font-size:1.2rem}
+.cropbox{position:relative;width:100%;aspect-ratio:4/3;border-radius:10px;overflow:hidden;touch-action:none;cursor:grab;background:var(--checker)}
+.cropbox:active{cursor:grabbing}
+.cropbox canvas{width:100%;height:100%;display:block}
+.cropbox .guide{position:absolute;inset:0;pointer-events:none;background:
+  linear-gradient(to right,transparent calc(33.33% - .5px),rgba(255,255,255,.55) calc(33.33% - .5px),rgba(255,255,255,.55) calc(33.33% + .5px),transparent calc(33.33% + .5px),transparent calc(66.66% - .5px),rgba(255,255,255,.55) calc(66.66% - .5px),rgba(255,255,255,.55) calc(66.66% + .5px),transparent calc(66.66% + .5px)),
+  linear-gradient(to bottom,transparent calc(33.33% - .5px),rgba(255,255,255,.55) calc(33.33% - .5px),rgba(255,255,255,.55) calc(33.33% + .5px),transparent calc(33.33% + .5px),transparent calc(66.66% - .5px),rgba(255,255,255,.55) calc(66.66% - .5px),rgba(255,255,255,.55) calc(66.66% + .5px),transparent calc(66.66% + .5px))}
+.cropctl{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+.cropctl input[type=range]{width:100%}
+.swatches{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.sw{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{border-color:var(--rose);box-shadow:0 0 0 2px var(--surface) inset}
+.sheet-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+
+@media (max-width:760px){
+  .grid5{grid-template-columns:1fr 1fr}
+  .prow{grid-template-columns:auto minmax(0,1fr)}
+  .prow .fieldcol{grid-column:1/-1}
+  .fields{grid-template-columns:1fr 1fr}
+  .fields .namef{grid-column:1/-1}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div><h1>店主後台</h1><p class="sub">紐約娃娃代購・商品與照片管理</p></div>
+    <a class="btn btn-ghost btn-sm" href="./" target="_blank" rel="noopener">查看網站</a>
+  </header>
+  <div class="airmail" aria-hidden="true"></div>
+
+  <!-- 連線 -->
+  <form class="panel" id="connect" novalidate>
+    <h2>連線到 GitHub</h2>
+    <p class="hint">第一次使用要貼上 GitHub 存取金鑰，後台才能幫你上傳照片和更新商品。金鑰只會存在這台電腦的瀏覽器裡。</p>
+    <details>
+      <summary style="cursor:pointer;font-weight:500">怎麼取得金鑰？（只要做一次）</summary>
+      <ol class="steps" style="margin-top:10px">
+        <li>打開 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub 新增金鑰頁面</a>（要先登入 GitHub）</li>
+        <li><b>Token name</b> 隨便取，例如 <code>shop-admin</code>；<b>Expiration</b> 可選 90 天或更久</li>
+        <li><b>Repository access</b> 選 <code>Only select repositories</code>，再選 <code>Shopping-agent-</code></li>
+        <li><b>Permissions</b> → <b>Repository permissions</b> → 找到 <b>Contents</b>，改成 <code>Read and write</code></li>
+        <li>拉到最下面按 <b>Generate token</b>，複製那串 <code>github_pat_</code> 開頭的金鑰，貼到下面</li>
+      </ol>
+    </details>
+    <div class="field"><label for="c-repo">Repo（帳號/名稱）</label><input id="c-repo" value="ming0403000/Shopping-agent-" autocomplete="off" spellcheck="false"></div>
+    <div class="field"><label for="c-token">GitHub 金鑰</label><input id="c-token" type="password" placeholder="github_pat_…" autocomplete="off" spellcheck="false"></div>
+    <label class="check"><input type="checkbox" id="c-remember" checked> 在這台電腦記住金鑰（公用電腦請取消勾選）</label>
+    <p class="err" id="c-err" hidden></p>
+    <div><button class="btn btn-primary" type="submit" id="c-btn">連線</button></div>
+  </form>
+
+  <!-- 主畫面 -->
+  <div id="app" hidden style="display:flex;flex-direction:column;gap:20px">
+    <div class="pubbar">
+      <span class="state" id="state">已是最新版本</span>
+      <div class="tools">
+        <button class="btn btn-ghost btn-sm" type="button" id="reloadBtn">重新載入</button>
+        <button class="btn btn-ghost btn-sm" type="button" id="logoutBtn">登出</button>
+        <button class="btn btn-primary btn-sm" type="button" id="publishBtn" disabled>發佈到網站</button>
+      </div>
+    </div>
+    <p class="pubmsg" id="pubmsg" hidden></p>
+
+    <section class="panel">
+      <h2>出貨資訊與 LINE</h2>
+      <div class="grid5">
+        <div class="field"><label for="s-lineId">LINE 官方帳號 ID</label><input id="s-lineId" data-shop="lineId"></div>
+        <div class="field"><label for="s-cutoff">截單日</label><input id="s-cutoff" data-shop="cutoff"></div>
+        <div class="field"><label for="s-nextShip">下一批出貨</label><input id="s-nextShip" data-shop="nextShip"></div>
+        <div class="field"><label for="s-eta">預計到台</label><input id="s-eta" data-shop="eta"></div>
+        <div class="field"><label for="s-batch">批次編號</label><input id="s-batch" data-shop="batch"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div><h2>商品</h2><p class="hint">由上到下就是網站上的順序，用左邊的箭頭調整。</p></div>
+        <button class="btn btn-primary btn-sm" type="button" id="addBtn">＋ 新增商品</button>
+      </div>
+      <div id="list"></div>
+    </section>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden>
+
+<!-- 裁切照片 -->
+<div class="modal" id="cropModal" hidden role="dialog" aria-modal="true" aria-labelledby="crop-title">
+  <div class="sheet">
+    <h3 id="crop-title">調整照片</h3>
+    <p class="hint" style="color:var(--muted);font-size:.85rem">拖曳照片移動位置，用下方滑桿放大縮小。框內看到的就是網站上顯示的樣子。</p>
+    <div class="cropbox" id="cropbox"><canvas id="cropCanvas" width="1200" height="900"></canvas><div class="guide" aria-hidden="true"></div></div>
+    <div class="cropctl">
+      <span style="font-size:.85rem;color:var(--muted)">縮小</span>
+      <input type="range" id="zoom" min="0" max="1000" value="0" aria-label="縮放">
+      <span style="font-size:.85rem;color:var(--muted)">放大</span>
+    </div>
+    <div class="swatches" role="group" aria-label="照片沒填滿時的背景色">
+      <span>空白處背景：</span>
+      <button type="button" class="sw" data-bg="#FFFFFF" style="background:#FFFFFF" aria-label="白色" aria-pressed="true"></button>
+      <button type="button" class="sw" data-bg="#F3EFEA" style="background:#F3EFEA" aria-label="米色" aria-pressed="false"></button>
+      <button type="button" class="sw" data-bg="#FBE7EE" style="background:#FBE7EE" aria-label="粉色" aria-pressed="false"></button>
+      <button type="button" class="sw" data-bg="#E6ECFA" style="background:#E6ECFA" aria-label="淺藍" aria-pressed="false"></button>
+      <button type="button" class="sw" data-bg="auto" style="background:conic-gradient(#ccc 0 25%,#999 0 50%,#ccc 0 75%,#999 0)" aria-label="取照片邊緣顏色" aria-pressed="false"></button>
+      <span style="font-size:.78rem">（最後一個會自動取照片邊緣的顏色）</span>
+    </div>
+    <div class="sheet-foot">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="btn btn-ghost btn-sm" id="cropFit">整張放進框內</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="cropFill">填滿框</button>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button type="button" class="btn btn-ghost btn-sm" id="cropCancel">取消</button>
+        <button type="button" class="btn btn-primary btn-sm" id="cropOk">使用這張</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== 設定 ===================== */
+const BRANCH = "main";
+const OUT_W = 1200, OUT_H = 900;           // 網站卡片是 4:3
+const STATUS = {instock:"現貨", preorder:"預購", soldout:"已售完"};
+const CATS = {doll:"娃娃", tj:"Trader Joe's 購物袋"};
+
+/* ===================== 狀態 ===================== */
+let repo = "", token = "";
+let DATA = null, fileSha = null;
+let dirty = false;
+const pending = {};      // "images/xxx.jpg" -> base64（尚未上傳）
+const previews = {};     // "images/xxx.jpg" -> dataURL / objectURL（畫面預覽用）
+const newIds = new Set();
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store = {
+  get(k){ try{ return localStorage.getItem(k) || sessionStorage.getItem(k); }catch{ return null; } },
+  set(k,v,remember){ try{ (remember ? localStorage : sessionStorage).setItem(k,v); }catch{} },
+  del(k){ try{ localStorage.removeItem(k); sessionStorage.removeItem(k); }catch{} }
+};
+
+/* ===================== GitHub API ===================== */
+async function gh(path, opts = {}){
+  const res = await fetch(`https://api.github.com/repos/${repo}/${path}`, {
+    ...opts,
+    cache: "no-store",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Accept": "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      ...(opts.body ? {"Content-Type": "application/json"} : {})
+    }
+  });
+  if (!res.ok){
+    let msg = ""; try{ msg = (await res.json()).message || ""; }catch{}
+    const e = new Error(msg || ("HTTP " + res.status)); e.status = res.status; throw e;
+  }
+  return res.json();
+}
+function b64ToText(b64){
+  const bin = atob(b64.replace(/\s/g, ""));
+  return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
+}
+function textToB64(text){
+  const bytes = new TextEncoder().encode(text);
+  let bin = ""; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+function friendlyError(e, when){
+  if (e.status === 401) return "金鑰無效或已過期，請登出後重新貼上新的金鑰。";
+  if (e.status === 403 || e.status === 404) return when === "load"
+    ? "找不到這個 repo 或金鑰沒有權限。請確認 repo 名稱正確，金鑰有選到這個 repo，而且 Contents 是 Read and write。"
+    : "金鑰沒有寫入權限。請確認金鑰的 Contents 權限是 Read and write。";
+  if (e.status === 409 || e.status === 422) return "網站資料在別的地方被改過了。請按「重新載入」拿到最新版本，再改一次。";
+  if (e instanceof SyntaxError) return "products.json 格式有錯，後台讀不懂。請在 GitHub 上修好格式（或請 Claude 幫忙）再重新載入。";
+  if (e instanceof TypeError) return "連不上 GitHub，請檢查網路後再試一次。";
+  return "發生錯誤：" + e.message;
+}
+
+/* ===================== 讀取 ===================== */
+async function load(){
+  const f = await gh(`contents/products.json?ref=${BRANCH}`);
+  DATA = JSON.parse(b64ToText(f.content));
+  if (!Array.isArray(DATA.products)) DATA.products = [];
+  fileSha = f.sha;
+  for (const k in pending) delete pending[k];
+  newIds.clear();
+  setDirty(false);
+  renderAll();
+}
+
+/* ===================== 畫面 ===================== */
+function setDirty(v){
+  dirty = v;
+  const n = Object.keys(pending).length;
+  const st = $("state");
+  st.textContent = v ? `有尚未發佈的變更${n ? `（含 ${n} 張新照片）` : ""}` : "已是最新版本";
+  st.classList.toggle("dirty", v);
+  $("publishBtn").disabled = !v;
+}
+function showMsg(text, ok){
+  const m = $("pubmsg"); m.textContent = text; m.hidden = !text;
+  m.className = "pubmsg " + (ok ? "ok" : "err");
+}
+function imgSrc(path){
+  if (!path) return "";
+  if (previews[path]) return previews[path];
+  return `https://raw.githubusercontent.com/${repo}/${BRANCH}/${encodeURI(path)}`;
+}
+function renderShop(){
+  document.querySelectorAll("[data-shop]").forEach(inp => inp.value = DATA[inp.dataset.shop] ?? "");
+}
+function renderList(){
+  const list = $("list");
+  if (!DATA.products.length){ list.innerHTML = `<p class="empty">還沒有商品。按右上角「新增商品」開始。</p>`; return; }
+  const last = DATA.products.length - 1;
+  list.innerHTML = DATA.products.map((p, i) => `
+    <div class="prow" data-i="${i}">
+      <div class="order">
+        <button class="icon-btn" type="button" data-act="up" aria-label="往前移" ${i===0?"disabled":""}>↑</button>
+        <span class="num">${i+1}</span>
+        <button class="icon-btn" type="button" data-act="down" aria-label="往後移" ${i===last?"disabled":""}>↓</button>
+      </div>
+      <div class="thumbcol">
+        <div class="thumb">${p.image ? `<img src="${esc(imgSrc(p.image))}" alt="">` : "還沒有照片"}</div>
+        <div class="btns">
+          <button class="btn btn-ghost btn-sm" type="button" data-act="photo">${p.image ? "換照片" : "上傳照片"}</button>
+          ${p.image ? `<button class="btn btn-ghost btn-sm" type="button" data-act="recrop">調整位置</button>` : ""}
+        </div>
+        ${pending[p.image] ? `<span class="pending">新照片，發佈後上傳</span>` : ""}
+      </div>
+      <div class="fieldcol" style="display:flex;flex-direction:column;gap:10px;min-width:0">
+        <div class="fields">
+          <div class="field namef"><label for="n-${i}">商品名稱 ${newIds.has(p.id) ? '<span class="newtag">新增</span>' : ""}</label><input id="n-${i}" data-k="name" value="${esc(p.name)}"></div>
+          <div class="field"><label for="pr-${i}">售價（NT$）</label><input id="pr-${i}" data-k="price" type="number" min="0" step="10" value="${esc(p.price)}"></div>
+          <div class="field"><label for="st-${i}">狀態</label>
+            <select id="st-${i}" data-k="status">${Object.entries(STATUS).map(([v,t]) => `<option value="${v}" ${p.status===v?"selected":""}>${t}</option>`).join("")}</select></div>
+          <div class="field wide"><label for="d-${i}">簡短說明</label><input id="d-${i}" data-k="description" value="${esc(p.description)}"></div>
+        </div>
+        <div class="rowfoot">
+          <div class="field" style="flex-direction:row;align-items:center;gap:8px"><label for="c-${i}" style="white-space:nowrap">分類</label>
+            <select id="c-${i}" data-k="category" style="width:auto">${Object.entries(CATS).map(([v,t]) => `<option value="${v}" ${p.category===v?"selected":""}>${t}</option>`).join("")}</select></div>
+          <button class="btn btn-danger btn-sm" type="button" data-act="del">刪除商品</button>
+        </div>
+      </div>
+    </div>`).join("");
+  list.querySelectorAll(".thumb img").forEach(img => img.addEventListener("error", () => {
+    img.parentElement.textContent = "照片讀不到（可能剛上傳，等 1 分鐘）";
+  }, {once:true}));
+}
+function renderAll(){ renderShop(); renderList(); }
+
+/* ===================== 編輯 ===================== */
+document.addEventListener("input", e => {
+  const s = e.target.dataset.shop;
+  if (s){ DATA[s] = e.target.value; setDirty(true); return; }
+  const k = e.target.dataset.k; if (!k) return;
+  const i = Number(e.target.closest(".prow").dataset.i);
+  DATA.products[i][k] = k === "price" ? (e.target.value === "" ? "" : Number(e.target.value)) : e.target.value;
+  setDirty(true);
+});
+document.addEventListener("change", e => { if (e.target.matches("select[data-k]")) e.target.dispatchEvent(new Event("input", {bubbles:true})); });
+
+let delArmed = null;
+let photoTarget = null;
+$("list").addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const i = Number(b.closest(".prow").dataset.i);
+  const P = DATA.products;
+  switch (b.dataset.act){
+    case "up":   [P[i-1], P[i]] = [P[i], P[i-1]]; setDirty(true); renderList(); break;
+    case "down": [P[i+1], P[i]] = [P[i], P[i+1]]; setDirty(true); renderList(); break;
+    case "del":
+      if (delArmed !== b){ delArmed = b; b.textContent = "再按一次確認刪除"; return; }
+      delete pending[P[i].image];
+      P.splice(i, 1); delArmed = null; setDirty(true); renderList(); break;
+    case "photo": photoTarget = i; $("fileInput").value = ""; $("fileInput").click(); break;
+    case "recrop": photoTarget = i; openCropFromUrl(imgSrc(P[i].image)); break;
+  }
+});
+$("addBtn").addEventListener("click", () => {
+  const id = "p" + Date.now().toString(36);
+  DATA.products.unshift({id, category:"doll", name:"新商品", description:"", price:"", status:"instock", image:""});
+  newIds.add(id); setDirty(true); renderList();
+  $("n-0").focus(); $("n-0").select();
+});
+
+/* ===================== 裁切 ===================== */
+const cv = $("cropCanvas"), ctx = cv.getContext("2d");
+let cImg = null, cScale = 1, cMin = 1, cMax = 4, cX = 0, cY = 0, cBg = "#FFFFFF", cAutoBg = "#FFFFFF";
+
+$("fileInput").addEventListener("change", async e => {
+  const f = e.target.files[0]; if (!f) return;
+  const url = URL.createObjectURL(f);
+  try{ await openCrop(url); }
+  catch{ showMsg("這張照片讀不出來。iPhone 的 HEIC 照片請先轉成 JPG 再上傳。", false); }
+});
+async function openCropFromUrl(url){
+  try{ await openCrop(url, true); }
+  catch{ showMsg("讀不到原本的照片（剛上傳的照片可能要等 1 分鐘）。也可以直接按「換照片」重新上傳。", false); }
+}
+function loadImage(src, cors){
+  return new Promise((res, rej) => { const im = new Image(); if (cors) im.crossOrigin = "anonymous"; im.onload = () => res(im); im.onerror = rej; im.src = src; });
+}
+async function openCrop(src, cors){
+  cImg = await loadImage(src, cors && !src.startsWith("data:") && !src.startsWith("blob:"));
+  const w = cImg.naturalWidth, h = cImg.naturalHeight;
+  const cover = Math.max(OUT_W / w, OUT_H / h), contain = Math.min(OUT_W / w, OUT_H / h);
+  cMin = contain; cMax = cover * 3;
+  cAutoBg = edgeColor(cImg);
+  setScale(cover, true);
+  $("cropModal").hidden = false;
+}
+function edgeColor(im){
+  const c = document.createElement("canvas"); c.width = 40; c.height = 30;
+  const x = c.getContext("2d"); x.drawImage(im, 0, 0, 40, 30);
+  let d; try{ d = x.getImageData(0, 0, 40, 30).data; }catch{ return "#FFFFFF"; }
+  let r=0,g=0,b=0,n=0;
+  for (let yy=0; yy<30; yy++) for (let xx=0; xx<40; xx++){
+    if (xx>1 && xx<38 && yy>1 && yy<28) continue;
+    const k=(yy*40+xx)*4; r+=d[k]; g+=d[k+1]; b+=d[k+2]; n++;
+  }
+  return `rgb(${Math.round(r/n)},${Math.round(g/n)},${Math.round(b/n)})`;
+}
+function zoomToSlider(s){ return Math.round(1000 * Math.log(s / cMin) / Math.log(cMax / cMin)); }
+function sliderToZoom(v){ return cMin * Math.pow(cMax / cMin, v / 1000); }
+function setScale(s, center){
+  const old = cScale; cScale = Math.min(cMax, Math.max(cMin, s));
+  if (center){ cX = (OUT_W - cImg.naturalWidth * cScale) / 2; cY = (OUT_H - cImg.naturalHeight * cScale) / 2; }
+  else { const k = cScale / old; cX = OUT_W/2 - (OUT_W/2 - cX) * k; cY = OUT_H/2 - (OUT_H/2 - cY) * k; }
+  $("zoom").value = zoomToSlider(cScale);
+  clampAndDraw();
+}
+function clampAxis(pos, size, frame){ return size >= frame ? Math.min(0, Math.max(frame - size, pos)) : Math.max(0, Math.min(frame - size, pos)); }
+function clampAndDraw(){
+  const w = cImg.naturalWidth * cScale, h = cImg.naturalHeight * cScale;
+  cX = clampAxis(cX, w, OUT_W); cY = clampAxis(cY, h, OUT_H);
+  ctx.fillStyle = cBg === "auto" ? cAutoBg : cBg; ctx.fillRect(0, 0, OUT_W, OUT_H);
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(cImg, cX, cY, w, h);
+}
+$("zoom").addEventListener("input", e => setScale(sliderToZoom(Number(e.target.value))));
+$("cropFit").addEventListener("click", () => setScale(cMin, true));
+$("cropFill").addEventListener("click", () => setScale(Math.max(OUT_W / cImg.naturalWidth, OUT_H / cImg.naturalHeight), true));
+document.querySelectorAll(".sw").forEach(b => b.addEventListener("click", () => {
+  cBg = b.dataset.bg; document.querySelectorAll(".sw").forEach(x => x.setAttribute("aria-pressed", x === b)); clampAndDraw();
+}));
+let drag = null;
+const box = $("cropbox");
+box.addEventListener("pointerdown", e => { drag = {x:e.clientX, y:e.clientY, cx:cX, cy:cY}; box.setPointerCapture(e.pointerId); });
+box.addEventListener("pointermove", e => {
+  if (!drag) return;
+  const k = OUT_W / box.clientWidth;
+  cX = drag.cx + (e.clientX - drag.x) * k; cY = drag.cy + (e.clientY - drag.y) * k; clampAndDraw();
+});
+box.addEventListener("pointerup", () => drag = null);
+box.addEventListener("pointercancel", () => drag = null);
+box.addEventListener("wheel", e => { e.preventDefault(); setScale(cScale * (e.deltaY < 0 ? 1.06 : 1/1.06)); }, {passive:false});
+$("cropCancel").addEventListener("click", () => { $("cropModal").hidden = true; });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("cropModal").hidden = true; });
+$("cropOk").addEventListener("click", () => {
+  let dataUrl;
+  try{ dataUrl = cv.toDataURL("image/jpeg", 0.85); }
+  catch{ showMsg("這張照片沒辦法在後台調整，請按「換照片」重新上傳原圖。", false); $("cropModal").hidden = true; return; }
+  const p = DATA.products[photoTarget];
+  if (pending[p.image]) delete pending[p.image];
+  const safeId = String(p.id).replace(/[^a-zA-Z0-9-]/g, "") || "item";
+  const path = `images/${safeId}-${Date.now().toString(36)}.jpg`;
+  pending[path] = dataUrl.split(",")[1];
+  previews[path] = dataUrl;
+  p.image = path;
+  $("cropModal").hidden = true;
+  setDirty(true); renderList(); showMsg("", true);
+});
+
+/* ===================== 發佈 ===================== */
+$("publishBtn").addEventListener("click", async () => {
+  const bad = DATA.products.findIndex(p => !String(p.name || "").trim() || p.price === "" || !(Number(p.price) >= 0));
+  if (bad >= 0){ showMsg(`第 ${bad + 1} 個商品還沒填名稱或售價，填好再發佈。`, false); return; }
+  const btn = $("publishBtn"); btn.disabled = true; btn.textContent = "發佈中…";
+  showMsg("", true);
+  try{
+    const used = new Set(DATA.products.map(p => p.image));
+    const paths = Object.keys(pending).filter(p => used.has(p));
+    let n = 0;
+    for (const path of paths){
+      n++; $("state").textContent = `上傳照片 ${n}/${paths.length}…`;
+      await gh(`contents/${encodeURI(path)}`, {method:"PUT", body: JSON.stringify({message:`上傳商品照片 ${path}`, content: pending[path], branch: BRANCH})});
+      delete pending[path];
+    }
+    $("state").textContent = "更新商品資料…";
+    const res = await gh("contents/products.json", {method:"PUT", body: JSON.stringify({
+      message: "更新商品資料", content: textToB64(JSON.stringify(DATA, null, 2) + "\n"), sha: fileSha, branch: BRANCH
+    })});
+    fileSha = res.content.sha;
+    for (const k in pending) delete pending[k];
+    newIds.clear();
+    setDirty(false); renderList();
+    showMsg("已發佈！網站大約 1–2 分鐘後更新，到時候重新整理網站就會看到。", true);
+  }catch(e){
+    setDirty(true);
+    showMsg(friendlyError(e, "save") + (Object.keys(pending).length ? "" : ""), false);
+  }finally{
+    btn.textContent = "發佈到網站"; btn.disabled = !dirty;
+  }
+});
+$("reloadBtn").addEventListener("click", async () => {
+  if (dirty && $("reloadBtn").dataset.armed !== "1"){ $("reloadBtn").dataset.armed = "1"; $("reloadBtn").textContent = "放棄變更並重新載入？"; return; }
+  $("reloadBtn").dataset.armed = ""; $("reloadBtn").textContent = "重新載入";
+  try{ await load(); showMsg("已載入最新版本。", true); }catch(e){ showMsg(friendlyError(e, "load"), false); }
+});
+$("logoutBtn").addEventListener("click", () => { store.del("gh-token"); location.reload(); });
+window.addEventListener("beforeunload", e => { if (dirty){ e.preventDefault(); e.returnValue = ""; } });
+
+/* ===================== 連線 ===================== */
+async function connect(r, t, remember){
+  repo = r.trim().replace(/^https?:\/\/github\.com\//, "").replace(/\/$/, ""); token = t.trim();
+  const err = $("c-err"); err.hidden = true; $("c-btn").disabled = true; $("c-btn").textContent = "連線中…";
+  try{
+    await load();
+    store.set("gh-token", token, remember); store.set("gh-repo", repo, true);
+    $("connect").hidden = true; $("app").hidden = false;
+  }catch(e){
+    err.textContent = friendlyError(e, "load"); err.hidden = false;
+  }finally{ $("c-btn").disabled = false; $("c-btn").textContent = "連線"; }
+}
+$("connect").addEventListener("submit", e => {
+  e.preventDefault();
+  if (!$("c-token").value.trim()){ $("c-err").textContent = "請貼上 GitHub 金鑰。"; $("c-err").hidden = false; return; }
+  connect($("c-repo").value, $("c-token").value, $("c-remember").checked);
+});
+(() => {
+  const r = store.get("gh-repo"); if (r) $("c-repo").value = r;
+  const t = store.get("gh-token"); if (t) connect($("c-repo").value, t, true);
+})();
+</script>
+</body>
+</html>
