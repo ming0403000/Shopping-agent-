@@ -8,11 +8,11 @@
     {
       "id": "p1",
       "category": "doll",
-      "name": "範例｜草莓洋裝小熊妹",
+      "name": "草莓奶昔娃娃",
       "description": "30cm，可換裝，附原廠盒",
       "price": 1680,
       "status": "instock",
-      "image": ""
+      "image": "image": "images/strawberry milkshake.jpg"
     },
     {
       "id": "p2",
