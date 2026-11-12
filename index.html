@@ -1,13 +1,24 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>紐約娃娃代購</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="紐約代購娃娃、玩具、收藏周邊與 Trader Joe's 購物袋，集中裝箱寄回台灣。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: airmail-parcel identity — a shipping-label hero, product shelf grid, then numbered route, wish form, FAQ. Single centered column, 1080px max. */
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+
+/* Layout: airmail-parcel identity — a shipping-label hero, product shelf grid, then numbered route, order + wish forms, FAQ. Single centered column, 1080px max. Data comes from products.json; photos from images/. */
 :root{
   --bg:#F5F6FA; --surface:#FFFFFF; --ink:#1D2540; --muted:#5E6782; --line:#DDE1EC;
   --rose:#D2486F; --rose-soft:#FBE7EE; --navy:#2A4BA0; --navy-soft:#E6ECFA; --ok:#2E8B62; --ok-soft:#E2F4EA;
+  --scrim:rgba(15,18,35,.5);
   --font-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
   --font-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
   --font-mono:"DM Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
@@ -15,10 +26,10 @@
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#12162A; --surface:#1B2038; --ink:#EEF0F8; --muted:#A3AAC4; --line:#2D3454;
-  --rose:#F07098; --rose-soft:#3A1F33; --navy:#8FA8F0; --navy-soft:#1F2A4D; --ok:#5CC796; --ok-soft:#173528; color-scheme:dark}}
+  --rose:#F07098; --rose-soft:#3A1F33; --navy:#8FA8F0; --navy-soft:#1F2A4D; --ok:#5CC796; --ok-soft:#173528; --scrim:rgba(0,0,0,.6); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12162A; --surface:#1B2038; --ink:#EEF0F8; --muted:#A3AAC4; --line:#2D3454;
-  --rose:#F07098; --rose-soft:#3A1F33; --navy:#8FA8F0; --navy-soft:#1F2A4D; --ok:#5CC796; --ok-soft:#173528; color-scheme:dark}
+  --rose:#F07098; --rose-soft:#3A1F33; --navy:#8FA8F0; --navy-soft:#1F2A4D; --ok:#5CC796; --ok-soft:#173528; --scrim:rgba(0,0,0,.6); color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.7;
@@ -32,7 +43,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--navy);outline-offset:2px}
 .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 
-/* airmail stripe */
 .airmail{height:8px;background:repeating-linear-gradient(-45deg,var(--rose) 0 14px,transparent 14px 22px,var(--navy) 22px 36px,transparent 36px 44px);border-radius:4px}
 
 header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:20px;flex-wrap:wrap}
@@ -42,7 +52,6 @@ nav.links{display:flex;gap:16px;flex-wrap:wrap;font-size:.95rem}
 nav.links a{color:var(--muted);text-decoration:none}
 nav.links a:hover{color:var(--ink)}
 
-/* hero */
 .hero{display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:center;padding-block:28px 48px}
 .hero h1{font-size:clamp(2rem,5vw,3.1rem)}
 .hero h1 em{font-style:normal;color:var(--rose)}
@@ -50,10 +59,12 @@ nav.links a:hover{color:var(--ink)}
 .hero .cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid transparent;border-radius:999px;padding:10px 20px;cursor:pointer;text-decoration:none;font-weight:500;transition:transform .12s, background .12s}
 .btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
 .btn-primary{background:var(--rose);color:#fff}
 .btn-ghost{background:transparent;border-color:var(--line);color:var(--ink)}
 .btn-ghost:hover{background:var(--surface)}
 .btn-line{background:#06C755;color:#fff}
+.btn-sm{padding:6px 14px;font-size:.88rem}
 
 .label{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:0 10px 30px -18px rgba(29,37,64,.35);transform:rotate(1.2deg)}
 .label-body{padding:18px 20px;display:grid;gap:14px}
@@ -61,29 +72,28 @@ nav.links a:hover{color:var(--ink)}
 .label .k{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .label .v{font-weight:500}
 .label .route{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:1.25rem}
-.label .route .arrow{flex:1;height:0;border-top:2px dashed var(--line);position:relative}
+.label .route .arrow{flex:1;height:0;border-top:2px dashed var(--line)}
 .barcode{height:38px;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 5px,transparent 5px 9px,var(--ink) 9px 12px,transparent 12px 14px);opacity:.85;border-radius:2px}
 .stamp{display:inline-block;border:2px solid var(--rose);color:var(--rose);border-radius:6px;padding:2px 10px;font-family:var(--font-mono);font-size:.75rem;letter-spacing:.08em;transform:rotate(-4deg)}
 
 section{padding-block:40px}
 .sec-head{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
 .sec-head p{color:var(--muted)}
-.note{font-size:.82rem;color:var(--muted);background:var(--navy-soft);border-radius:8px;padding:6px 12px}
 
-/* filters */
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:.9rem}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
-/* products */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
-.card .pic{aspect-ratio:4/3;max-width:100%;display:grid;place-items:center;position:relative}
+.card .pic{aspect-ratio:4/3;max-width:100%;display:grid;place-items:center;position:relative;overflow:hidden}
 .card .pic svg{width:58%;height:auto}
-.badge{position:absolute;top:10px;left:10px;font-size:.75rem;font-weight:500;padding:2px 10px;border-radius:999px}
+.card .pic img{width:100%;height:100%;object-fit:cover;display:block}
+.badge{position:absolute;top:10px;left:10px;font-size:.75rem;font-weight:500;padding:2px 10px;border-radius:999px;z-index:1}
 .badge.instock{background:var(--ok-soft);color:var(--ok)}
 .badge.preorder{background:var(--navy-soft);color:var(--navy)}
 .badge.soldout{background:var(--line);color:var(--muted)}
+.edit-btn{position:absolute;top:8px;right:8px;z-index:1;border:0;border-radius:999px;padding:4px 12px;background:var(--ink);color:var(--bg);cursor:pointer;font-size:.82rem}
 .card .info{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
 .card h3{font-size:1.1rem}
 .card .desc{color:var(--muted);font-size:.88rem;flex:1}
@@ -94,8 +104,10 @@ section{padding-block:40px}
 .add:hover{background:var(--rose-soft)}
 .add[disabled]{border-color:var(--line);color:var(--muted);cursor:not-allowed;background:transparent}
 .add.in{background:var(--rose);color:#fff}
+.add-card{border:2px dashed var(--line);border-radius:var(--r);background:transparent;cursor:pointer;min-height:220px;color:var(--muted);font-size:1rem;display:grid;place-items:center}
+.add-card:hover{border-color:var(--rose);color:var(--rose)}
+.empty-grid{grid-column:1/-1;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r);padding:24px;text-align:center}
 
-/* route */
 .route-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(5,1fr);gap:14px;counter-reset:step}
 .route-list li{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;counter-increment:step;display:flex;flex-direction:column;gap:6px;min-width:0}
 .route-list li::before{content:counter(step);font-family:var(--font-mono);width:28px;height:28px;border-radius:50%;background:var(--navy-soft);color:var(--navy);display:grid;place-items:center;font-size:.85rem}
@@ -103,11 +115,10 @@ section{padding-block:40px}
 .route-list span{color:var(--muted);font-size:.86rem}
 .route-list .when{font-family:var(--font-mono);font-size:.78rem;color:var(--rose)}
 
-/* forms */
 .two{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:start}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
 .panel h3{font-size:1.2rem}
-.field{display:flex;flex-direction:column;gap:4px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
 .field label{font-size:.85rem;font-weight:500}
 .field input,.field select,.field textarea{border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--bg);width:100%}
 .field textarea{min-height:80px;resize:vertical}
@@ -124,7 +135,6 @@ section{padding-block:40px}
 .err{color:var(--rose);font-size:.85rem}
 .ok-msg{color:var(--ok);font-size:.85rem}
 
-/* faq */
 .faq{display:grid;gap:10px;max-width:760px}
 details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
 summary{cursor:pointer;font-weight:500;list-style:none;display:flex;justify-content:space-between;gap:12px}
@@ -137,7 +147,6 @@ footer{padding-block:32px;color:var(--muted);font-size:.85rem;display:flex;flex-
 .contact{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .contact code{font-family:var(--font-mono);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:4px 10px;user-select:all;color:var(--ink)}
 
-/* sticky cart bar */
 .cartbar{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:12px}
 .cartbar a{background:var(--rose);color:#fff;text-decoration:none;border-radius:999px;padding:8px 18px;font-weight:500}
 
@@ -152,11 +161,13 @@ footer{padding-block:32px;color:var(--muted);font-size:.85rem;display:flex;flex-
   .row2{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.load-err{grid-column:1/-1;color:var(--rose);border:1px dashed var(--rose);border-radius:var(--r);padding:20px;text-align:center}
 </style>
-
+</head>
+<body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="brand-mark" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="7" r="4.5" fill="#fff"/><path d="M4 18 L10 10 L16 18 Z" fill="#fff"/></svg></span><span id="shopName">紐約娃娃代購</span></div>
+    <div class="brand"><span class="brand-mark" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="7" r="4.5" fill="#fff"/><path d="M4 18 L10 10 L16 18 Z" fill="#fff"/></svg></span><span>紐約娃娃代購</span></div>
     <nav class="links" aria-label="頁面導覽">
       <a href="#shop">商品</a><a href="#route">代購流程</a><a href="#wish">許願代購</a><a href="#faq">常見問題</a>
     </nav>
@@ -177,16 +188,16 @@ footer{padding-block:32px;color:var(--muted);font-size:.85rem;display:flex;flex-
       <div class="label-body">
         <div class="route"><span>New York</span><span class="arrow" aria-hidden="true"></span><span>台北</span></div>
         <div class="label-row">
-          <div><div class="k">Next batch 下一批出貨</div><div class="v mono" id="nextShip">2026/11/24</div></div>
-          <div><div class="k">Arrive 預計到台</div><div class="v mono" id="eta">12/08 – 12/15</div></div>
+          <div><div class="k">Next batch 下一批出貨</div><div class="v mono" id="nextShip"></div></div>
+          <div><div class="k">Arrive 預計到台</div><div class="v mono" id="eta"></div></div>
         </div>
         <div class="label-row">
-          <div><div class="k">Order cutoff 截單</div><div class="v mono" id="cutoff">2026/11/20</div></div>
+          <div><div class="k">Order cutoff 截單</div><div class="v mono" id="cutoff"></div></div>
           <div><div class="k">Contents 內容物</div><div class="v">商品 Merchandise</div></div>
         </div>
         <div class="barcode" aria-hidden="true"></div>
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <span class="mono" style="font-size:.8rem;color:var(--muted)">BATCH NO. NY-2611</span>
+          <span class="mono" style="font-size:.8rem;color:var(--muted)" id="batchNo"></span>
           <span class="stamp">AIR MAIL</span>
         </div>
       </div>
@@ -196,7 +207,6 @@ footer{padding-block:32px;color:var(--muted);font-size:.85rem;display:flex;flex-
   <section id="shop">
     <div class="sec-head">
       <div><h2>現貨與預購</h2><p>價格已含紐約到台灣的國際運費，台灣國內寄送另計。</p></div>
-      <span class="note">目前為範例商品，之後換成你的娃娃</span>
     </div>
     <div class="filters" role="group" aria-label="篩選商品">
       <button class="chip" data-f="all" aria-pressed="true">全部</button>
@@ -213,7 +223,7 @@ footer{padding-block:32px;color:var(--muted);font-size:.85rem;display:flex;flex-
     <ol class="route-list">
       <li><span class="when">Day 0</span><b>選好下單</b><span>網站填單，或直接 LINE 私訊</span></li>
       <li><span class="when">1–2 天內</span><b>確認並付款</b><span>確認有貨後回覆你，預購先付訂金</span></li>
-      <li><span class="when">截單後</span><b>紐約採購裝箱</b><span>集中購買、仔細包裝，一箱約 10 隻</span></li>
+      <li><span class="when">截單後</span><b>紐約採購裝箱</b><span>集中購買、仔細包裝，一箱約 10 件</span></li>
       <li><span class="when">約 2–3 週</span><b>國際空運</b><span>寄到台灣、通關，提供追蹤進度</span></li>
       <li><span class="when">到台後 3 天內</span><b>寄到你手上</b><span>超商店到店，或台北面交</span></li>
     </ol>
@@ -284,9 +294,9 @@ footer{padding-block:32px;color:var(--muted);font-size:.85rem;display:flex;flex-
   <section id="faq">
     <div class="sec-head"><div><h2>常見問題</h2></div></div>
     <div class="faq">
-      <details><summary>為什麼不代購 Trader Joe's 的零食和食品？</summary><p>依台灣食品安全法規，從國外寄回、未經輸入查驗的食品只能個人自用，不能代購轉賣；含肉的食品寄進台灣更會被重罰。為了保障你我雙方，我們只代購 Trader Joe's 的購物袋等非食品商品。</p></details>
       <details open><summary>售價包含哪些費用？</summary><p>商品價格、美國當地消費稅，以及紐約寄到台灣的國際運費都已含在售價裡。台灣國內寄送（超商店到店）另計 NT$60，面交免運。</p></details>
       <details><summary>多久可以收到？</summary><p>我們大約每兩週集中出一箱。截單後採購裝箱，國際運送約 2–3 週，到台後 3 天內寄出。從下單到收到大約 3–4 週，遇到海關抽查或年底旺季可能會再久一點。</p></details>
+      <details><summary>為什麼不代購 Trader Joe's 的零食和食品？</summary><p>依台灣食品安全法規，從國外寄回、未經輸入查驗的食品只能個人自用，不能代購轉賣；含肉的食品寄進台灣更會被重罰。為了保障你我雙方，我們只代購 Trader Joe's 的購物袋等非食品商品。</p></details>
       <details><summary>會被課關稅嗎？</summary><p>海關可能依包裹價值課徵關稅和營業稅。一般商品由我們吸收，若單筆訂單金額特別高、被另外課稅，會先跟你說明再處理。</p></details>
       <details><summary>怎麼付款？預購要付多少？</summary><p>現貨確認後全額匯款；預購先付 50% 訂金，商品到台後再付尾款。確認訂單時會提供匯款帳號。</p></details>
       <details><summary>可以退換貨嗎？</summary><p>代購商品為特別為你購買，下單後恕不接受取消或退換。若收到時商品有瑕疵或寄錯，請在收到 3 天內拍照聯絡我們處理。</p></details>
@@ -296,7 +306,7 @@ footer{padding-block:32px;color:var(--muted);font-size:.85rem;display:flex;flex-
 
   <div class="airmail" aria-hidden="true"></div>
   <footer>
-    <div class="contact">LINE 官方帳號：<code id="lineIdText">@your-line-id</code><button class="btn btn-ghost" id="copyLineId" style="padding:4px 12px;font-size:.85rem">複製</button><a class="btn btn-line lineLink" href="#" target="_blank" rel="noopener" style="padding:4px 14px;font-size:.85rem">加入好友</a></div>
+    <div class="contact">LINE 官方帳號：<code id="lineIdText"></code><button class="btn btn-ghost btn-sm" id="copyLineId" type="button">複製</button><a class="btn btn-line btn-sm lineLink" href="#" target="_blank" rel="noopener">加入好友</a></div>
     <p>© 2026 紐約娃娃代購・本站為個人代購服務，與商品品牌無合作關係。</p>
   </footer>
 </div>
@@ -307,32 +317,18 @@ footer{padding-block:32px;color:var(--muted);font-size:.85rem;display:flex;flex-
 </div>
 
 <script>
-/* ===== 在這裡修改商店設定 ===== */
-const SHOP = {
-  lineId: "@your-line-id",           // 你的 LINE 官方帳號 ID
-};
-
-/* ===== 在這裡修改商品（目前都是範例）=====
-   status: "instock" 現貨 / "preorder" 預購 / "soldout" 售完
-   colors: 範例圖的顏色（之後可換成真的照片） */
-const PRODUCTS = [
-  {id:"p1", name:"範例｜草莓洋裝小熊妹", desc:"30cm，可換裝，附原廠盒", price:1680, status:"instock", colors:["#F4B6C2","#8A5A44","#E05A7A"]},
-  {id:"p2", name:"範例｜冬季限定毛帽娃", desc:"25cm，紐約門市限定配色", price:2280, status:"instock", colors:["#C9D6F2","#3B3B58","#2A4BA0"]},
-  {id:"p3", name:"範例｜復古格紋套裝", desc:"30cm，含兩套衣服", price:2980, status:"preorder", colors:["#F2E3C6","#6B4A3A","#B5523B"]},
-  {id:"p4", name:"範例｜迷你口袋娃 3 入", desc:"10cm，隨機款式盲盒", price:990, status:"instock", colors:["#D9F0E3","#2E2E2E","#2E8B62"]},
-  {id:"p5", name:"範例｜聖誕節禮盒組", desc:"含娃娃與配件，12 月底到貨", price:3580, status:"preorder", colors:["#F7D6D6","#5A2E2E","#C0392B"]},
-  {id:"p6", name:"範例｜珍珠白婚紗款", desc:"30cm，收藏款", price:4280, status:"soldout", colors:["#F5F5F5","#B08A5A","#CFCFE0"]},
-  // Trader Joe's 購物袋（cat:"tj"），只代購非食品
-  {id:"t1", cat:"tj", name:"範例｜Trader Joe's 迷你帆布袋", desc:"小尺寸，多色可選，顏色請備註", price:450, status:"instock", colors:["#E8C9A0","#7A5634","#C0392B"]},
-  {id:"t2", cat:"tj", name:"範例｜Trader Joe's 經典帆布購物袋", desc:"大容量，耐重可重複使用", price:390, status:"instock", colors:["#EFE6D2","#5A4632","#2A4BA0"]},
-  {id:"t3", cat:"tj", name:"範例｜Trader Joe's 保冷袋", desc:"拉鍊保冷設計，買菜野餐都好用", price:590, status:"instock", colors:["#CFE3F2","#2E4A66","#2E8B62"]},
-  {id:"t4", cat:"tj", name:"範例｜Trader Joe's 節慶限定帆布袋", desc:"季節限定圖案，數量有限", price:520, status:"preorder", colors:["#F2D4D4","#6B2E2E","#2E8B62"]},
-];
-
-/* ===== 以下為網站程式，不需修改 ===== */
+/* 網站程式：商品資料從 products.json 讀取，照片放在 images/ 資料夾。
+   一般更新只要改 products.json 和上傳照片，不需要動這個檔案。 */
 const STATUS = {instock:"現貨", preorder:"預購", soldout:"已售完"};
-const fmt = n => "NT$" + n.toLocaleString("en-US");
-const cart = {}; // id -> qty
+const PALETTE = {
+  doll: [["#F4B6C2","#8A5A44","#E05A7A"],["#C9D6F2","#3B3B58","#2A4BA0"],["#F2E3C6","#6B4A3A","#B5523B"],["#D9F0E3","#2E2E2E","#2E8B62"]],
+  tj:   [["#E8C9A0","#7A5634","#C0392B"],["#EFE6D2","#5A4632","#2A4BA0"],["#CFE3F2","#2E4A66","#2E8B62"],["#F2D4D4","#6B2E2E","#2E8B62"]]
+};
+const fmt = n => "NT$" + Number(n||0).toLocaleString("en-US");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let DATA = {products: []};
+const cart = {};
+let filter = "all";
 
 function dollSVG([skin, hair, dress]){
   return `<svg viewBox="0 0 100 120" aria-hidden="true">
@@ -345,7 +341,6 @@ function dollSVG([skin, hair, dress]){
     <circle cx="40" cy="43" r="3" fill="#F28FA8" opacity=".55"/><circle cx="60" cy="43" r="3" fill="#F28FA8" opacity=".55"/>
   </svg>`;
 }
-
 function bagSVG([bag, handle, stripe]){
   return `<svg viewBox="0 0 100 120" aria-hidden="true">
     <ellipse cx="50" cy="114" rx="30" ry="4" fill="currentColor" opacity=".12"/>
@@ -355,49 +350,71 @@ function bagSVG([bag, handle, stripe]){
     <rect x="36" y="74" width="28" height="4" rx="2" fill="${handle}" opacity=".5"/>
   </svg>`;
 }
+function colorsFor(p, i){ const set = PALETTE[p.category] || PALETTE.doll; return set[i % set.length]; }
+function illustration(p, i){ return p.category === "tj" ? bagSVG(colorsFor(p, i)) : dollSVG(colorsFor(p, i)); }
 
-let filter = "all";
+function renderShopInfo(){
+  document.getElementById("nextShip").textContent = DATA.nextShip || "—";
+  document.getElementById("eta").textContent = DATA.eta || "—";
+  document.getElementById("cutoff").textContent = DATA.cutoff || "—";
+  document.getElementById("batchNo").textContent = DATA.batch ? "BATCH NO. " + DATA.batch : "";
+  document.getElementById("lineIdText").textContent = DATA.lineId || "";
+  const url = "https://line.me/R/ti/p/" + encodeURIComponent(DATA.lineId || "");
+  document.querySelectorAll(".lineLink").forEach(a => a.href = url);
+}
+
 function renderGrid(){
   const g = document.getElementById("grid");
-  g.innerHTML = PRODUCTS.filter(p => filter==="all" || p.status===filter || (p.cat||"doll")===filter).map(p => {
+  const list = DATA.products.map((p, i) => ({p, i})).filter(({p}) => filter==="all" || p.status===filter || (p.category||"doll")===filter);
+  if (!list.length){ g.innerHTML = `<p class="empty-grid">這個分類目前沒有商品，歡迎用許願代購告訴我們想要什麼。</p>`; return; }
+  g.innerHTML = list.map(({p, i}) => {
     const inCart = cart[p.id] > 0;
+    const pic = p.image
+      ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" data-fallback="${i}">`
+      : illustration(p, i);
+    const bg = p.image ? "var(--bg)" : `color-mix(in srgb, ${colorsFor(p, i)[0]} 45%, var(--surface))`;
     return `<article class="card">
-      <div class="pic" style="background:color-mix(in srgb, ${p.colors[0]} 45%, var(--surface))">
-        <span class="badge ${p.status}">${STATUS[p.status]}</span>${p.cat==="tj"?bagSVG(p.colors):dollSVG(p.colors)}
+      <div class="pic" style="background:${bg}">
+        <span class="badge ${esc(p.status)}">${STATUS[p.status]||""}</span>
+        ${pic}
       </div>
       <div class="info">
-        <h3>${p.name}</h3>
-        <p class="desc">${p.desc}</p>
+        <h3>${esc(p.name)}</h3>
+        <p class="desc">${esc(p.description)}</p>
         <div class="meta">
           <span class="price">${fmt(p.price)}${p.status==="preorder"?' <small>訂金 50%</small>':''}</span>
-          <button class="add ${inCart?'in':''}" data-id="${p.id}" ${p.status==="soldout"?"disabled":""}>
+          <button class="add ${inCart?'in':''}" data-id="${esc(p.id)}" ${p.status==="soldout"?"disabled":""}>
             ${p.status==="soldout"?"已售完":inCart?`已加入 ${cart[p.id]}`:"加入清單"}</button>
         </div>
       </div>
     </article>`;
   }).join("");
+  // 照片檔名打錯或還沒上傳時，改顯示插圖
+  g.querySelectorAll("img[data-fallback]").forEach(img => img.addEventListener("error", () => {
+    const i = Number(img.dataset.fallback), p = DATA.products[i];
+    img.parentElement.style.background = `color-mix(in srgb, ${colorsFor(p, i)[0]} 45%, var(--surface))`;
+    img.outerHTML = illustration(p, i);
+  }, {once: true}));
 }
 
-function cartItems(){ return PRODUCTS.filter(p => cart[p.id] > 0).map(p => ({...p, qty:cart[p.id]})); }
-
+function cartItems(){ return DATA.products.filter(p => cart[p.id] > 0).map(p => ({...p, qty:cart[p.id]})); }
 function renderCart(){
   const items = cartItems();
   const el = document.getElementById("cart");
+  const total = items.reduce((s,i)=>s+i.price*i.qty,0);
   if(!items.length){
     el.innerHTML = `<div class="cart-empty">還沒有選商品。<br>在上方按「加入清單」，或直接到「許願代購」貼連結。</div>`;
   } else {
-    const total = items.reduce((s,i)=>s+i.price*i.qty,0);
     el.innerHTML = items.map(i => `<div class="cart-item">
-        <div style="min-width:0"><div>${i.name}</div><div class="mono" style="font-size:.8rem;color:var(--muted)">${fmt(i.price)} · ${STATUS[i.status]}</div></div>
-        <div class="qty"><button type="button" data-dec="${i.id}" aria-label="減少">−</button><span class="mono">${i.qty}</span><button type="button" data-inc="${i.id}" aria-label="增加">+</button></div>
+        <div style="min-width:0"><div>${esc(i.name)}</div><div class="mono" style="font-size:.8rem;color:var(--muted)">${fmt(i.price)} · ${STATUS[i.status]}</div></div>
+        <div class="qty"><button type="button" data-dec="${esc(i.id)}" aria-label="減少">−</button><span class="mono">${i.qty}</span><button type="button" data-inc="${esc(i.id)}" aria-label="增加">+</button></div>
         <div class="mono">${fmt(i.price*i.qty)}</div>
       </div>`).join("") + `<div class="total"><span>商品小計</span><span class="mono">${fmt(total)}</span></div>`;
   }
   const n = items.reduce((s,i)=>s+i.qty,0);
   document.getElementById("cartbar").hidden = n===0;
-  document.getElementById("cartbarText").textContent = `已選 ${n} 件・${fmt(items.reduce((s,i)=>s+i.price*i.qty,0))}`;
+  document.getElementById("cartbarText").textContent = `已選 ${n} 件・${fmt(total)}`;
 }
-
 function rerender(){ renderGrid(); renderCart(); }
 
 document.addEventListener("click", e => {
@@ -410,15 +427,14 @@ document.addEventListener("click", e => {
 });
 
 async function copyText(text, okEl, srcEl){
-  try{ await navigator.clipboard.writeText(text); okEl.hidden=false; }
+  try{ await navigator.clipboard.writeText(text); okEl.textContent="已複製，貼到 LINE 傳給我們就完成了。"; okEl.hidden=false; }
   catch{ const r=document.createRange(); r.selectNodeContents(srcEl); const s=getSelection(); s.removeAllRanges(); s.addRange(r); okEl.textContent="已幫你選取文字，請按複製後貼到 LINE。"; okEl.hidden=false; }
 }
 const val = id => document.getElementById(id).value.trim();
 
 document.getElementById("orderForm").addEventListener("submit", e => {
   e.preventDefault();
-  const err = document.getElementById("o-err"); const items = cartItems();
-  const missing = [];
+  const err = document.getElementById("o-err"); const items = cartItems(); const missing = [];
   if(!items.length) missing.push("至少選一件商品");
   if(!val("o-name")) missing.push("姓名");
   if(!val("o-line")) missing.push("LINE ID 或手機");
@@ -428,10 +444,8 @@ document.getElementById("orderForm").addEventListener("submit", e => {
   const msg = [
     "【紐約娃娃代購｜訂單】",
     ...items.map(i=>`・${i.name.replace("範例｜","")} ×${i.qty}（${STATUS[i.status]}）${fmt(i.price*i.qty)}`),
-    `商品小計：${fmt(total)}`,
-    "",
-    `姓名：${val("o-name")}`,
-    `聯絡：${val("o-line")}`,
+    `商品小計：${fmt(total)}`, "",
+    `姓名：${val("o-name")}`, `聯絡：${val("o-line")}`,
     `取貨：${val("o-ship")}${val("o-store")?"／"+val("o-store"):""}`,
     val("o-note")?`備註：${val("o-note")}`:null,
   ].filter(x=>x!==null).join("\n");
@@ -451,13 +465,10 @@ document.getElementById("wishForm").addEventListener("submit", e => {
   err.hidden = true;
   const msg = [
     "【紐約娃娃代購｜許願】",
-    `商品：${val("w-link")}`,
-    `數量：${val("w-qty")||1}`,
+    `商品：${val("w-link")}`, `數量：${val("w-qty")||1}`,
     val("w-budget")?`預算上限：${fmt(Number(val("w-budget")))}`:null,
-    val("w-note")?`需求：${val("w-note")}`:null,
-    "",
-    `姓名：${val("w-name")}`,
-    `聯絡：${val("w-line")}`,
+    val("w-note")?`需求：${val("w-note")}`:null, "",
+    `姓名：${val("w-name")}`, `聯絡：${val("w-line")}`,
   ].filter(x=>x!==null).join("\n");
   document.getElementById("w-out").textContent = msg;
   document.getElementById("w-result").hidden = false;
@@ -465,14 +476,28 @@ document.getElementById("wishForm").addEventListener("submit", e => {
 });
 document.getElementById("w-copy").addEventListener("click", () => copyText(document.getElementById("w-out").textContent, document.getElementById("w-copied"), document.getElementById("w-out")));
 
-const lineUrl = "https://line.me/R/ti/p/" + encodeURIComponent(SHOP.lineId);
-document.querySelectorAll(".lineLink").forEach(a => a.href = lineUrl);
-document.getElementById("lineIdText").textContent = SHOP.lineId;
 document.getElementById("copyLineId").addEventListener("click", e => {
-  navigator.clipboard?.writeText(SHOP.lineId).then(()=>{ e.target.textContent="已複製"; }).catch(()=>{ const r=document.createRange(); r.selectNodeContents(document.getElementById("lineIdText")); getSelection().removeAllRanges(); getSelection().addRange(r); });
+  const btn = e.currentTarget;
+  navigator.clipboard?.writeText(DATA.lineId || "").then(()=>{ btn.textContent="已複製"; }).catch(()=>{
+    const r=document.createRange(); r.selectNodeContents(document.getElementById("lineIdText")); getSelection().removeAllRanges(); getSelection().addRange(r);
+  });
 });
 
-rerender();
+(async () => {
+  try{
+    const res = await fetch("products.json", {cache: "no-cache"});
+    if(!res.ok) throw new Error("http " + res.status);
+    DATA = await res.json();
+    if(!Array.isArray(DATA.products)) DATA.products = [];
+  }catch(err){
+    console.error("讀取 products.json 失敗：", err);
+    document.getElementById("grid").innerHTML = `<p class="load-err">商品資料讀取失敗。<br>如果你是店主：請檢查 products.json 的格式（逗號、引號）是否正確。</p>`;
+    renderCart();
+    return;
+  }
+  renderShopInfo();
+  rerender();
+})();
 </script>
-
-</body></html>
+</body>
+</html>

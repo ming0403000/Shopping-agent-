@@ -1,0 +1,99 @@
+{
+  "lineId": "@your-line-id",
+  "cutoff": "2026/11/20",
+  "nextShip": "2026/11/24",
+  "eta": "12/08 – 12/15",
+  "batch": "NY-2611",
+  "products": [
+    {
+      "id": "p1",
+      "category": "doll",
+      "name": "範例｜草莓洋裝小熊妹",
+      "description": "30cm，可換裝，附原廠盒",
+      "price": 1680,
+      "status": "instock",
+      "image": ""
+    },
+    {
+      "id": "p2",
+      "category": "doll",
+      "name": "範例｜冬季限定毛帽娃",
+      "description": "25cm，紐約門市限定配色",
+      "price": 2280,
+      "status": "instock",
+      "image": ""
+    },
+    {
+      "id": "p3",
+      "category": "doll",
+      "name": "範例｜復古格紋套裝",
+      "description": "30cm，含兩套衣服",
+      "price": 2980,
+      "status": "preorder",
+      "image": ""
+    },
+    {
+      "id": "p4",
+      "category": "doll",
+      "name": "範例｜迷你口袋娃 3 入",
+      "description": "10cm，隨機款式盲盒",
+      "price": 990,
+      "status": "instock",
+      "image": ""
+    },
+    {
+      "id": "p5",
+      "category": "doll",
+      "name": "範例｜聖誕節禮盒組",
+      "description": "含娃娃與配件，12 月底到貨",
+      "price": 3580,
+      "status": "preorder",
+      "image": ""
+    },
+    {
+      "id": "p6",
+      "category": "doll",
+      "name": "範例｜珍珠白婚紗款",
+      "description": "30cm，收藏款",
+      "price": 4280,
+      "status": "soldout",
+      "image": ""
+    },
+    {
+      "id": "t1",
+      "category": "tj",
+      "name": "範例｜Trader Joe's 迷你帆布袋",
+      "description": "小尺寸，多色可選，顏色請備註",
+      "price": 450,
+      "status": "instock",
+      "image": ""
+    },
+    {
+      "id": "t2",
+      "category": "tj",
+      "name": "範例｜Trader Joe's 經典帆布購物袋",
+      "description": "大容量，耐重可重複使用",
+      "price": 390,
+      "status": "instock",
+      "image": ""
+    },
+    {
+      "id": "t3",
+      "category": "tj",
+      "name": "範例｜Trader Joe's 保冷袋",
+      "description": "拉鍊保冷設計，買菜野餐都好用",
+      "price": 590,
+      "status": "instock",
+      "image": ""
+    },
+    {
+      "id": "t4",
+      "category": "tj",
+      "name": "範例｜Trader Joe's 節慶限定帆布袋",
+      "description": "季節限定圖案，數量有限",
+      "price": 520,
+      "status": "preorder",
+      "image": ""
+    }
+  ]
+}
