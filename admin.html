@@ -88,6 +88,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .rowfoot{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .newtag{font-size:.75rem;background:var(--navy-soft);color:var(--navy);border-radius:999px;padding:1px 9px}
 .pending{font-size:.75rem;background:var(--rose-soft);color:var(--rose);border-radius:999px;padding:1px 9px}
+.crow{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto auto;gap:10px;align-items:center;padding-block:8px;border-top:1px solid var(--line)}
+.crow:first-child{border-top:0}
+.crow input{border:1px solid var(--line);border-radius:10px;padding:7px 11px;background:var(--bg);width:100%}
+.crow .count{font-size:.82rem;color:var(--muted);white-space:nowrap}
+.cat-err{grid-column:1/-1;color:var(--rose);font-size:.82rem}
+@media (max-width:520px){ .crow{grid-template-columns:auto auto minmax(0,1fr)} .crow .count{grid-column:3} .crow .btn-danger{grid-column:3;justify-self:start} }
 .empty{color:var(--muted);text-align:center;padding:24px;border:1px dashed var(--line);border-radius:10px}
 
 .modal{position:fixed;inset:0;z-index:40;background:var(--scrim);display:grid;place-items:center;
@@ -171,6 +177,14 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
     <section class="panel">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div><h2>商品分類</h2><p class="hint">就是網站上「全部」旁邊的分類按鈕。沒有商品的分類不會顯示在網站上。</p></div>
+        <button class="btn btn-ghost btn-sm" type="button" id="addCatBtn">＋ 新增分類</button>
+      </div>
+      <div id="cats"></div>
+    </section>
+
+    <section class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
         <div><h2>商品</h2><p class="hint">由上到下就是網站上的順序，用左邊的箭頭調整。</p></div>
         <button class="btn btn-primary btn-sm" type="button" id="addBtn">＋ 新增商品</button>
       </div>
@@ -219,7 +233,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 const BRANCH = "main";
 const OUT_W = 1200, OUT_H = 900;           // 網站卡片是 4:3
 const STATUS = {instock:"現貨", preorder:"預購", soldout:"已售完"};
-const CATS = {doll:"娃娃", tj:"Trader Joe's 購物袋"};
+const DEFAULT_CATS = [{id:"doll", name:"娃娃"}, {id:"tj", name:"Trader Joe's"}];
 
 /* ===================== 狀態 ===================== */
 let repo = "", token = "";
@@ -280,6 +294,7 @@ async function load(){
   const f = await gh(`contents/products.json?ref=${BRANCH}`);
   DATA = JSON.parse(b64ToText(f.content));
   if (!Array.isArray(DATA.products)) DATA.products = [];
+  if (!Array.isArray(DATA.categories) || !DATA.categories.length) DATA.categories = DEFAULT_CATS.map(c => ({...c}));
   fileSha = f.sha;
   for (const k in pending) delete pending[k];
   newIds.clear();
@@ -337,7 +352,7 @@ function renderList(){
         </div>
         <div class="rowfoot">
           <div class="field" style="flex-direction:row;align-items:center;gap:8px"><label for="c-${i}" style="white-space:nowrap">分類</label>
-            <select id="c-${i}" data-k="category" style="width:auto">${Object.entries(CATS).map(([v,t]) => `<option value="${v}" ${p.category===v?"selected":""}>${t}</option>`).join("")}</select></div>
+            <select id="c-${i}" data-k="category" style="width:auto">${DATA.categories.map(c => `<option value="${esc(c.id)}" ${p.category===c.id?"selected":""}>${esc(c.name || "（未命名）")}</option>`).join("")}</select></div>
           <button class="btn btn-danger btn-sm" type="button" data-act="del">刪除商品</button>
         </div>
       </div>
@@ -346,14 +361,37 @@ function renderList(){
     img.parentElement.textContent = "照片讀不到（可能剛上傳，等 1 分鐘）";
   }, {once:true}));
 }
-function renderAll(){ renderShop(); renderList(); }
+function renderCats(msg){
+  const box = $("cats"); const C = DATA.categories; const last = C.length - 1;
+  box.innerHTML = C.map((c, i) => {
+    const n = DATA.products.filter(p => p.category === c.id).length;
+    return `<div class="crow" data-ci="${i}">
+      <button class="icon-btn" type="button" data-cact="up" aria-label="往前移" ${i===0?"disabled":""}>↑</button>
+      <button class="icon-btn" type="button" data-cact="down" aria-label="往後移" ${i===last?"disabled":""}>↓</button>
+      <input id="cat-${i}" data-cname value="${esc(c.name)}" aria-label="分類名稱">
+      <span class="count">${n} 個商品</span>
+      <button class="btn btn-danger btn-sm" type="button" data-cact="del">刪除</button>
+      ${msg && msg.i === i ? `<p class="cat-err">${esc(msg.text)}</p>` : ""}
+    </div>`;
+  }).join("") || `<p class="empty">還沒有分類。</p>`;
+}
+function renderAll(){ renderShop(); renderCats(); renderList(); }
 
 /* ===================== 編輯 ===================== */
 document.addEventListener("input", e => {
+  if (e.target.hasAttribute("data-cname")){
+    const i = Number(e.target.closest(".crow").dataset.ci);
+    DATA.categories[i].name = e.target.value; setDirty(true);
+    document.querySelectorAll('select[data-k="category"]').forEach(sel => {
+      const o = sel.querySelector(`option[value="${CSS.escape(DATA.categories[i].id)}"]`); if (o) o.textContent = e.target.value || "（未命名）";
+    });
+    return;
+  }
   const s = e.target.dataset.shop;
   if (s){ DATA[s] = e.target.value; setDirty(true); return; }
   const k = e.target.dataset.k; if (!k) return;
   const i = Number(e.target.closest(".prow").dataset.i);
+  if (k === "category") queueMicrotask(() => renderCats());
   DATA.products[i][k] = k === "price" ? (e.target.value === "" ? "" : Number(e.target.value)) : e.target.value;
   setDirty(true);
 });
@@ -369,6 +407,7 @@ $("list").addEventListener("click", e => {
     case "up":   [P[i-1], P[i]] = [P[i], P[i-1]]; setDirty(true); renderList(); break;
     case "down": [P[i+1], P[i]] = [P[i], P[i+1]]; setDirty(true); renderList(); break;
     case "del":
+      if (delArmed === b) queueMicrotask(() => renderCats());
       if (delArmed !== b){ delArmed = b; b.textContent = "再按一次確認刪除"; return; }
       delete pending[P[i].image];
       P.splice(i, 1); delArmed = null; setDirty(true); renderList(); break;
@@ -376,10 +415,29 @@ $("list").addEventListener("click", e => {
     case "recrop": photoTarget = i; openCropFromUrl(imgSrc(P[i].image)); break;
   }
 });
+let catDelArmed = null;
+$("cats").addEventListener("click", e => {
+  const b = e.target.closest("[data-cact]"); if (!b) return;
+  const i = Number(b.closest(".crow").dataset.ci); const C = DATA.categories;
+  if (b.dataset.cact === "up"){ [C[i-1], C[i]] = [C[i], C[i-1]]; }
+  else if (b.dataset.cact === "down"){ [C[i+1], C[i]] = [C[i], C[i+1]]; }
+  else {
+    const n = DATA.products.filter(p => p.category === C[i].id).length;
+    if (n){ renderCats({i, text:`還有 ${n} 個商品在這個分類。先把這些商品改到別的分類，才能刪除。`}); return; }
+    if (catDelArmed !== C[i].id){ catDelArmed = C[i].id; b.textContent = "再按一次確認"; return; }
+    C.splice(i, 1); catDelArmed = null;
+  }
+  setDirty(true); renderCats(); renderList();
+});
+$("addCatBtn").addEventListener("click", () => {
+  DATA.categories.push({id: "c" + Date.now().toString(36), name: "新分類"});
+  setDirty(true); renderCats(); renderList();
+  const inp = $("cat-" + (DATA.categories.length - 1)); inp.focus(); inp.select();
+});
 $("addBtn").addEventListener("click", () => {
   const id = "p" + Date.now().toString(36);
-  DATA.products.unshift({id, category:"doll", name:"新商品", description:"", price:"", status:"instock", image:""});
-  newIds.add(id); setDirty(true); renderList();
+  DATA.products.unshift({id, category:(DATA.categories[0] || {}).id || "doll", name:"新商品", description:"", price:"", status:"instock", image:""});
+  newIds.add(id); setDirty(true); renderList(); renderCats();
   $("n-0").focus(); $("n-0").select();
 });
 
@@ -473,6 +531,8 @@ $("cropOk").addEventListener("click", () => {
 
 /* ===================== 發佈 ===================== */
 $("publishBtn").addEventListener("click", async () => {
+  const badCat = DATA.categories.findIndex(c => !String(c.name || "").trim());
+  if (badCat >= 0){ showMsg(`第 ${badCat + 1} 個分類還沒取名字，填好再發佈。`, false); return; }
   const bad = DATA.products.findIndex(p => !String(p.name || "").trim() || p.price === "" || !(Number(p.price) >= 0));
   if (bad >= 0){ showMsg(`第 ${bad + 1} 個商品還沒填名稱或售價，填好再發佈。`, false); return; }
   const btn = $("publishBtn"); btn.disabled = true; btn.textContent = "發佈中…";

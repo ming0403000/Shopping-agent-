@@ -208,12 +208,8 @@ footer{padding-block:32px;color:var(--muted);font-size:.85rem;display:flex;flex-
     <div class="sec-head">
       <div><h2>現貨與預購</h2><p>價格已含紐約到台灣的國際運費，台灣國內寄送另計。</p></div>
     </div>
-    <div class="filters" role="group" aria-label="篩選商品">
+    <div class="filters" id="filters" role="group" aria-label="篩選商品">
       <button class="chip" data-f="all" aria-pressed="true">全部</button>
-      <button class="chip" data-f="doll" aria-pressed="false">娃娃</button>
-      <button class="chip" data-f="tj" aria-pressed="false">Trader Joe's 購物袋</button>
-      <button class="chip" data-f="instock" aria-pressed="false">現貨</button>
-      <button class="chip" data-f="preorder" aria-pressed="false">預購</button>
     </div>
     <div class="grid" id="grid"></div>
   </section>
@@ -324,6 +320,7 @@ const PALETTE = {
   doll: [["#F4B6C2","#8A5A44","#E05A7A"],["#C9D6F2","#3B3B58","#2A4BA0"],["#F2E3C6","#6B4A3A","#B5523B"],["#D9F0E3","#2E2E2E","#2E8B62"]],
   tj:   [["#E8C9A0","#7A5634","#C0392B"],["#EFE6D2","#5A4632","#2A4BA0"],["#CFE3F2","#2E4A66","#2E8B62"],["#F2D4D4","#6B2E2E","#2E8B62"]]
 };
+const DEFAULT_CATS = [{id:"doll", name:"娃娃"}, {id:"tj", name:"Trader Joe's"}];
 const fmt = n => "NT$" + Number(n||0).toLocaleString("en-US");
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let DATA = {products: []};
@@ -350,8 +347,29 @@ function bagSVG([bag, handle, stripe]){
     <rect x="36" y="74" width="28" height="4" rx="2" fill="${handle}" opacity=".5"/>
   </svg>`;
 }
-function colorsFor(p, i){ const set = PALETTE[p.category] || PALETTE.doll; return set[i % set.length]; }
-function illustration(p, i){ return p.category === "tj" ? bagSVG(colorsFor(p, i)) : dollSVG(colorsFor(p, i)); }
+function boxSVG([box, ribbon, tag]){
+  return `<svg viewBox="0 0 100 120" aria-hidden="true">
+    <ellipse cx="50" cy="114" rx="30" ry="4" fill="currentColor" opacity=".12"/>
+    <rect x="20" y="52" width="60" height="56" rx="4" fill="${box}"/>
+    <rect x="16" y="40" width="68" height="16" rx="4" fill="${box}" stroke="${ribbon}" stroke-opacity=".25"/>
+    <rect x="45" y="40" width="10" height="68" fill="${tag}"/>
+    <path d="M50 40 Q36 22 32 34 Q30 42 50 40 Q70 42 68 34 Q64 22 50 40 Z" fill="${tag}"/>
+  </svg>`;
+}
+function colorsFor(p, i){ const set = PALETTE[p.category] || PALETTE.tj; return set[i % set.length]; }
+function illustration(p, i){
+  if (p.category === "doll") return dollSVG(colorsFor(p, i));
+  if (p.category === "tj") return bagSVG(colorsFor(p, i));
+  return boxSVG(colorsFor(p, i));
+}
+function categories(){ return Array.isArray(DATA.categories) && DATA.categories.length ? DATA.categories : DEFAULT_CATS; }
+function renderFilters(){
+  const used = new Set(DATA.products.map(p => p.category));
+  const chips = [["all","全部"], ...categories().filter(c => used.has(c.id)).map(c => ["c:" + c.id, c.name]), ["s:instock","現貨"], ["s:preorder","預購"]];
+  if (!chips.some(([f]) => f === filter)) filter = "all";
+  document.getElementById("filters").innerHTML = chips.map(([f, t]) =>
+    `<button class="chip" type="button" data-f="${esc(f)}" aria-pressed="${f === filter}">${esc(t)}</button>`).join("");
+}
 
 function renderShopInfo(){
   document.getElementById("nextShip").textContent = DATA.nextShip || "—";
@@ -365,7 +383,7 @@ function renderShopInfo(){
 
 function renderGrid(){
   const g = document.getElementById("grid");
-  const list = DATA.products.map((p, i) => ({p, i})).filter(({p}) => filter==="all" || p.status===filter || (p.category||"doll")===filter);
+  const list = DATA.products.map((p, i) => ({p, i})).filter(({p}) => filter==="all" || filter==="c:" + p.category || filter==="s:" + p.status);
   if (!list.length){ g.innerHTML = `<p class="empty-grid">這個分類目前沒有商品，歡迎用許願代購告訴我們想要什麼。</p>`; return; }
   g.innerHTML = list.map(({p, i}) => {
     const inCart = cart[p.id] > 0;
@@ -496,6 +514,7 @@ document.getElementById("copyLineId").addEventListener("click", e => {
     return;
   }
   renderShopInfo();
+  renderFilters();
   rerender();
 })();
 </script>
