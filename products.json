@@ -1,8 +1,8 @@
 {
-  "lineId": "@your-line-id",
+  "lineId": "",
   "cutoff": "2026/11/20",
   "nextShip": "2026/11/24",
-  "eta": "12/08 – 12/15",
+  "eta": "12/14 – 12/15",
   "batch": "NY-2611",
   "products": [
     {
@@ -15,15 +15,6 @@
       "image": "images/p1-mwdh767w.jpg"
     },
     {
-      "id": "p2",
-      "category": "doll",
-      "name": "巧克力黑白餅乾 紐約限定🇺🇸  Nibblechip Cookie",
-      "description": "25cm，紐約門市限定配色",
-      "price": 1256,
-      "status": "instock",
-      "image": "images/p2-mwdhbw46.jpg"
-    },
-    {
       "id": "p3",
       "category": "doll",
       "name": "冰淇淋熊熊 紐約限定🇺🇸 Oatus Bear with Ice Cream",
@@ -33,13 +24,13 @@
       "image": "images/p3-mwdhc3oq.jpg"
     },
     {
-      "id": "p4",
+      "id": "t2",
       "category": "doll",
-      "name": " 紐約鴿子 紐約限定🇺🇸 Fao Strutton Pigeon",
-      "description": "10cm，隨機款式盲盒",
-      "price": 1435,
+      "name": "範例｜Trader Joe's 經典帆布購物袋",
+      "description": "大容量，耐重可重複使用",
+      "price": 390,
       "status": "instock",
-      "image": "images/p4-mwdhcq67.jpg"
+      "image": "images/t2-mwklt1vv.jpg"
     },
     {
       "id": "p5",
@@ -51,49 +42,72 @@
       "image": "images/p5-mwdhcvm1.jpg"
     },
     {
+      "id": "p2",
+      "category": "doll",
+      "name": "巧克力黑白餅乾 紐約限定🇺🇸  Nibblechip Cookie",
+      "description": "25cm，紐約門市限定配色",
+      "price": 1256,
+      "status": "instock",
+      "image": "images/p2-mwdhbw46.jpg"
+    },
+    {
       "id": "p6",
       "category": "doll",
       "name": "範例｜珍珠白婚紗款",
       "description": "30cm，收藏款",
       "price": 4280,
       "status": "soldout",
-      "image": ""
-    },
-    {
-      "id": "t1",
-      "category": "tj",
-      "name": "範例｜Trader Joe's 迷你帆布袋",
-      "description": "小尺寸，多色可選，顏色請備註",
-      "price": 450,
-      "status": "instock",
-      "image": ""
-    },
-    {
-      "id": "t2",
-      "category": "tj",
-      "name": "範例｜Trader Joe's 經典帆布購物袋",
-      "description": "大容量，耐重可重複使用",
-      "price": 390,
-      "status": "instock",
-      "image": ""
+      "image": "images/p6-mwklsi3l.jpg"
     },
     {
       "id": "t3",
-      "category": "tj",
+      "category": "doll",
       "name": "範例｜Trader Joe's 保冷袋",
       "description": "拉鍊保冷設計，買菜野餐都好用",
       "price": 590,
       "status": "instock",
-      "image": ""
+      "image": "images/t3-mwklt7mh.jpg"
     },
     {
       "id": "t4",
-      "category": "tj",
+      "category": "doll",
       "name": "範例｜Trader Joe's 節慶限定帆布袋",
       "description": "季節限定圖案，數量有限",
       "price": 520,
       "status": "preorder",
-      "image": ""
+      "image": "images/t4-mwkltj7b.jpg"
+    },
+    {
+      "id": "p4",
+      "category": "cmwklq364",
+      "name": " 紐約鴿子 紐約限定🇺🇸 Fao Strutton Pigeon",
+      "description": "10cm，隨機款式盲盒",
+      "price": 1435,
+      "status": "instock",
+      "image": "images/p4-mwdhcq67.jpg"
+    },
+    {
+      "id": "t1",
+      "category": "cmwklq364",
+      "name": "範例｜Trader Joe's 迷你帆布袋",
+      "description": "小尺寸，多色可選，顏色請備註",
+      "price": 450,
+      "status": "instock",
+      "image": "images/t1-mwklssei.jpg"
+    }
+  ],
+  "categories": [
+    {
+      "id": "doll",
+      "name": "Jelly Cats 食物系列"
+    },
+    {
+      "id": "cmwklq364",
+      "name": "Jelly Cats 動物系列"
+    },
+    {
+      "id": "tj",
+      "name": "Trader Joe's"
     }
   ]
 }
