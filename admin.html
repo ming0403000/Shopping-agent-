@@ -94,6 +94,11 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .crow .count{font-size:.82rem;color:var(--muted);white-space:nowrap}
 .cat-err{grid-column:1/-1;color:var(--rose);font-size:.82rem}
 @media (max-width:520px){ .crow{grid-template-columns:auto auto minmax(0,1fr)} .crow .count{grid-column:3} .crow .btn-danger{grid-column:3;justify-self:start} }
+.namepreview{display:flex;flex-direction:column;gap:6px;background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:12px 14px;font-size:.88rem;color:var(--muted)}
+.namepreview b{color:var(--ink);font-weight:500}
+.namepreview .brand{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-display);font-size:1.1rem;color:var(--ink)}
+.namepreview .dot{width:22px;height:22px;border-radius:50%;background:var(--rose);flex:none}
+.field .counter{font-size:.75rem;color:var(--muted);align-self:flex-end}
 .empty{color:var(--muted);text-align:center;padding:24px;border:1px dashed var(--line);border-radius:10px}
 
 .modal{position:fixed;inset:0;z-index:40;background:var(--scrim);display:grid;place-items:center;
@@ -126,7 +131,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 <body>
 <div class="wrap">
   <header class="top">
-    <div><h1>店主後台</h1><p class="sub">紐約娃娃代購・商品與照片管理</p></div>
+    <div><h1>店主後台</h1><p class="sub"><span id="hdrName">紐約娃娃代購</span>・商品與照片管理</p></div>
     <a class="btn btn-ghost btn-sm" href="./" target="_blank" rel="noopener">查看網站</a>
   </header>
   <div class="airmail" aria-hidden="true"></div>
@@ -159,10 +164,20 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
       <div class="tools">
         <button class="btn btn-ghost btn-sm" type="button" id="reloadBtn">重新載入</button>
         <button class="btn btn-ghost btn-sm" type="button" id="logoutBtn">登出</button>
-        <button class="btn btn-primary btn-sm" type="button" id="publishBtn" disabled>發佈到網站</button>
+        <button class="btn btn-primary btn-sm" type="button" id="publishBtn" disabled title="快捷鍵：Ctrl／⌘ + S">發佈到網站</button>
       </div>
     </div>
     <p class="pubmsg" id="pubmsg" hidden></p>
+
+    <section class="panel">
+      <div><h2>網站名稱</h2><p class="hint">會顯示在網站左上角、瀏覽器分頁標題、頁尾，以及客人複製的 LINE 訂單／許願訊息開頭。</p></div>
+      <div class="field"><label for="s-siteName">網站名稱</label><input id="s-siteName" data-shop="siteName" maxlength="30" placeholder="例如：紐約娃娃代購"><span class="counter" id="nameCount">0 / 30</span></div>
+      <div class="namepreview" aria-live="polite">
+        <span>預覽：</span>
+        <span class="brand"><span class="dot" aria-hidden="true"></span><span data-namepv></span></span>
+        <span>LINE 訊息開頭：<b>【<span data-namepv></span>｜訂單】</b></span>
+      </div>
+    </section>
 
     <section class="panel">
       <h2>出貨資訊與 LINE</h2>
@@ -233,6 +248,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 const BRANCH = "main";
 const OUT_W = 1200, OUT_H = 900;           // 網站卡片是 4:3
 const STATUS = {instock:"現貨", preorder:"預購", soldout:"已售完"};
+const DEFAULT_SITE_NAME = "紐約娃娃代購";
 const DEFAULT_CATS = [{id:"doll", name:"娃娃"}, {id:"tj", name:"Trader Joe's"}];
 
 /* ===================== 狀態 ===================== */
@@ -295,6 +311,7 @@ async function load(){
   DATA = JSON.parse(b64ToText(f.content));
   if (!Array.isArray(DATA.products)) DATA.products = [];
   if (!Array.isArray(DATA.categories) || !DATA.categories.length) DATA.categories = DEFAULT_CATS.map(c => ({...c}));
+  if (typeof DATA.siteName !== "string" || !DATA.siteName.trim()) DATA.siteName = DEFAULT_SITE_NAME;
   fileSha = f.sha;
   for (const k in pending) delete pending[k];
   newIds.clear();
@@ -322,6 +339,14 @@ function imgSrc(path){
 }
 function renderShop(){
   document.querySelectorAll("[data-shop]").forEach(inp => inp.value = DATA[inp.dataset.shop] ?? "");
+  renderName();
+}
+function renderName(){
+  const n = String(DATA.siteName || "").trim() || DEFAULT_SITE_NAME;
+  document.querySelectorAll("[data-namepv]").forEach(el => el.textContent = n);
+  $("hdrName").textContent = n;
+  document.title = `店主後台｜${n}`;
+  $("nameCount").textContent = `${[...String(DATA.siteName || "")].length} / 30`;
 }
 function renderList(){
   const list = $("list");
@@ -388,7 +413,7 @@ document.addEventListener("input", e => {
     return;
   }
   const s = e.target.dataset.shop;
-  if (s){ DATA[s] = e.target.value; setDirty(true); return; }
+  if (s){ DATA[s] = e.target.value; setDirty(true); if (s === "siteName") renderName(); return; }
   const k = e.target.dataset.k; if (!k) return;
   const i = Number(e.target.closest(".prow").dataset.i);
   if (k === "category") queueMicrotask(() => renderCats());
@@ -531,6 +556,8 @@ $("cropOk").addEventListener("click", () => {
 
 /* ===================== 發佈 ===================== */
 $("publishBtn").addEventListener("click", async () => {
+  if (!String(DATA.siteName || "").trim()){ showMsg("網站名稱不能空白，填好再發佈。", false); $("s-siteName").focus(); return; }
+  DATA.siteName = DATA.siteName.trim();
   const badCat = DATA.categories.findIndex(c => !String(c.name || "").trim());
   if (badCat >= 0){ showMsg(`第 ${badCat + 1} 個分類還沒取名字，填好再發佈。`, false); return; }
   const bad = DATA.products.findIndex(p => !String(p.name || "").trim() || p.price === "" || !(Number(p.price) >= 0));
@@ -557,7 +584,7 @@ $("publishBtn").addEventListener("click", async () => {
     showMsg("已發佈！網站大約 1–2 分鐘後更新，到時候重新整理網站就會看到。", true);
   }catch(e){
     setDirty(true);
-    showMsg(friendlyError(e, "save") + (Object.keys(pending).length ? "" : ""), false);
+    showMsg(friendlyError(e, "save"), false);
   }finally{
     btn.textContent = "發佈到網站"; btn.disabled = !dirty;
   }
@@ -568,6 +595,13 @@ $("reloadBtn").addEventListener("click", async () => {
   try{ await load(); showMsg("已載入最新版本。", true); }catch(e){ showMsg(friendlyError(e, "load"), false); }
 });
 $("logoutBtn").addEventListener("click", () => { store.del("gh-token"); location.reload(); });
+// Ctrl/⌘ + S 直接發佈
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s" && !$("app").hidden){
+    e.preventDefault(); if (!$("publishBtn").disabled) $("publishBtn").click();
+  }
+});
+$("reloadBtn").addEventListener("blur", () => { const b = $("reloadBtn"); if (b.dataset.armed === "1"){ b.dataset.armed = ""; b.textContent = "重新載入"; } });
 window.addEventListener("beforeunload", e => { if (dirty){ e.preventDefault(); e.returnValue = ""; } });
 
 /* ===================== 連線 ===================== */
