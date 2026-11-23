@@ -294,7 +294,7 @@ footer{padding-block:32px;color:var(--muted);font-size:.85rem;display:flex;flex-
       <details><summary>多久可以收到？</summary><p>我們大約每兩週集中出一箱。截單後採購裝箱，國際運送約 2–3 週，到台後 3 天內寄出。從下單到收到大約 3–4 週，遇到海關抽查或年底旺季可能會再久一點。</p></details>
       <details><summary>為什麼不代購 Trader Joe's 的零食和食品？</summary><p>依台灣食品安全法規，從國外寄回、未經輸入查驗的食品只能個人自用，不能代購轉賣；含肉的食品寄進台灣更會被重罰。為了保障你我雙方，我們只代購 Trader Joe's 的購物袋等非食品商品。</p></details>
       <details><summary>會被課關稅嗎？</summary><p>海關可能依包裹價值課徵關稅和營業稅。一般商品由我們吸收，若單筆訂單金額特別高、被另外課稅，會先跟你說明再處理。</p></details>
-      <details><summary>怎麼付款？預購要付多少？</summary><p>現貨確認後全額匯款；預購先付 50% 訂金，商品到台後再付尾款。確認訂單時會提供匯款帳號。</p></details>
+      <details><summary>怎麼付款？預購要付多少？</summary><p>現貨確認後全額匯款；預購先付 30–50% 訂金（依款式而定），商品到台後再付尾款。確認訂單時會提供匯款帳號。</p></details>
       <details><summary>可以退換貨嗎？</summary><p>代購商品為特別為你購買，下單後恕不接受取消或退換。若收到時商品有瑕疵或寄錯，請在收到 3 天內拍照聯絡我們處理。</p></details>
       <details><summary>外盒會保留嗎？</summary><p>預設保留原廠外盒，並加上氣泡紙包裝。若你不需要外盒，可以在備註註明，有機會幫你省一點運費。</p></details>
     </div>
@@ -404,7 +404,7 @@ function renderGrid(){
         <h3>${esc(p.name)}</h3>
         <p class="desc">${esc(p.description)}</p>
         <div class="meta">
-          <span class="price">${fmt(p.price)}${p.status==="preorder"?' <small>訂金 50%</small>':''}</span>
+          <span class="price">${fmt(p.price)}${p.status==="preorder"?' <small>訂金 30–50%</small>':''}</span>
           <button class="add ${inCart?'in':''}" data-id="${esc(p.id)}" ${p.status==="soldout"?"disabled":""}>
             ${p.status==="soldout"?"已售完":inCart?`已加入 ${cart[p.id]}`:"加入清單"}</button>
         </div>
