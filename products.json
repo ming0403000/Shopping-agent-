@@ -6,6 +6,51 @@
   "batch": "NY-2611",
   "products": [
     {
+      "id": "pmwt6kwad",
+      "category": "doll",
+      "name": "Trader Joe's  盲盒包",
+      "description": "",
+      "price": 300,
+      "status": "instock",
+      "image": "images/pmwt6kwad-mwt6mb12.jpg"
+    },
+    {
+      "id": "pmwt6icqa",
+      "category": "tj",
+      "name": "帆布迷你托特包（附購物袋）",
+      "description": "",
+      "price": 300,
+      "status": "instock",
+      "image": "images/pmwt6icqa-mwt6iksr.jpg"
+    },
+    {
+      "id": "pmwt69efv",
+      "category": "doll",
+      "name": "Trader Joe's 迷你托特包",
+      "description": "",
+      "price": 300,
+      "status": "instock",
+      "image": "images/pmwt69efv-mwt69ung.jpg"
+    },
+    {
+      "id": "pmwt67pdd",
+      "category": "tj",
+      "name": "Trader Joe's 保冷袋",
+      "description": "",
+      "price": 300,
+      "status": "instock",
+      "image": "images/pmwt67pdd-mwt680lg.jpg"
+    },
+    {
+      "id": "pmwt65r67",
+      "category": "tj",
+      "name": "Trader Joe's 帆布袋",
+      "description": "",
+      "price": 300,
+      "status": "instock",
+      "image": "images/pmwt65r67-mwt65zka.jpg"
+    },
+    {
       "id": "p1",
       "category": "doll",
       "name": "草莓奶昔 紐約限定🇺🇸 Fao Bubbeca Milkshake",
@@ -107,7 +152,7 @@
     },
     {
       "id": "tj",
-      "name": "Trader Joe's帆布袋"
+      "name": "Trader Joe's"
     },
     {
       "id": "cmwovguph",
