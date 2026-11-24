@@ -6,11 +6,20 @@
   "batch": "NY-2611",
   "products": [
     {
+      "id": "pmwusdwys",
+      "category": "cmwovguph",
+      "name": "SNOOPY 托特包",
+      "description": "",
+      "price": 1980,
+      "status": "preorder",
+      "image": "images/pmwusdwys-mwuseam9.jpg"
+    },
+    {
       "id": "pmwt7a0hi",
       "category": "cmwovkd0o",
       "name": "Stanley 水壺系列(歡迎詢問）",
       "description": "普通款、限定系列皆可做詢問~",
-      "price": 9999999,
+      "price": 0,
       "status": "preorder",
       "image": "images/pmwt7a0hi-mwt7aft3.jpg"
     },
@@ -19,7 +28,7 @@
       "category": "cmwovipy3",
       "name": "Owala水壺系列(歡迎詢問)",
       "description": "普通款、限定系列皆可做詢問~",
-      "price": 9999999,
+      "price": 0,
       "status": "preorder",
       "image": "images/pmwt748w5-mwt75j0x.jpg"
     },
@@ -198,5 +207,5 @@
       "name": "Stanley"
     }
   ],
-  "siteName": "小明的行李箱｜紐約代購 寄回台灣"
+  "siteName": "明箱小舖｜紐約代購"
 }
